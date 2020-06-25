@@ -538,6 +538,15 @@ $capabilities = array(
         ),
         'clonepermissionsfrom' => 'moodle/user:update'
     ),
+    
+    // If a user can ignore the maildisplay setting of the user he's viewing.
+    // The capability makes sense when setting up a web service to fetch users data.
+    'moodle/user:ignoremaildisplay' => array(
+        'riskbitmap' => RISK_PERSONAL,
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'clonepermissionsfrom' => 'moodle/user:viewalldetails'
+    ),    
 
     'moodle/user:viewlastip' => array(
         'riskbitmask' => RISK_PERSONAL,

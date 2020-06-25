@@ -1712,7 +1712,7 @@ $functions = array(
         'classpath' => 'user/externallib.php',
         'description' => 'search for users matching the parameters',
         'type' => 'read',
-        'capabilities' => 'moodle/user:viewdetails, moodle/user:viewhiddendetails, moodle/course:useremail, moodle/user:update'
+        'capabilities' => 'moodle/user:viewdetails, moodle/user:viewhiddendetails, moodle/course:useremail, moodle/user:update, moodle/user:ignoremaildisplay'
     ),
     'core_user_get_users_by_field' => array(
         'classname' => 'core_user_external',
@@ -1721,7 +1721,7 @@ $functions = array(
         'description' => 'Retrieve users\' information for a specified unique field - If you want to do a user search, use '
             . 'core_user_get_users()',
         'type' => 'read',
-        'capabilities' => 'moodle/user:viewdetails, moodle/user:viewhiddendetails, moodle/course:useremail, moodle/user:update',
+        'capabilities' => 'moodle/user:viewdetails, moodle/user:viewhiddendetails, moodle/course:useremail, moodle/user:update, moodle/user:ignoremaildisplay',
         'ajax' => true,
         'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE),
     ),

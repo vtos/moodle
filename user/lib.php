@@ -480,12 +480,19 @@ function user_get_user_details($user, $course = null, array $userfields = array(
         }
     }
 
+    if (empty($course)) {
+        $ignoreusermaildisplay = has_capability('moodle/user:ignoremaildisplay', $context);
+    } else {
+        $ignoreusermaildisplay = false;
+    }    
+    
     if (in_array('email', $userfields) && (
             $currentuser
             or (!isset($hiddenfields['email']) and (
-                $user->maildisplay == core_user::MAILDISPLAY_EVERYONE
-                or ($user->maildisplay == core_user::MAILDISPLAY_COURSE_MEMBERS_ONLY and enrol_sharing_course($user, $USER))
-                or $canviewuseremail  // TODO: Deprecate/remove for MDL-37479.
+                $ignoreusermaildisplay or (
+                    $user->maildisplay == core_user::MAILDISPLAY_EVERYONE
+                    or ($user->maildisplay == core_user::MAILDISPLAY_COURSE_MEMBERS_ONLY and enrol_sharing_course($user, $USER))
+                ) or $canviewuseremail  // TODO: Deprecate/remove for MDL-37479.
             ))
             or in_array('email', $showuseridentityfields)
        )) {

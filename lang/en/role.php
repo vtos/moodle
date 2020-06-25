@@ -454,6 +454,7 @@ $string['user:editmessageprofile'] = 'Edit user messaging profile';
 $string['user:editownmessageprofile'] = 'Edit own user messaging profile';
 $string['user:editownprofile'] = 'Edit own user profile';
 $string['user:editprofile'] = 'Edit user profile';
+$string['user:ignoremaildisplay'] = 'Ignore user\'s maildisplay setting to view his email';
 $string['user:ignoreuserquota'] = 'Ignore user quota limit';
 $string['user:loginas'] = 'Login as other users';
 $string['user:manageblocks'] = 'Manage blocks on user profile of other users';
