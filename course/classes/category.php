@@ -689,6 +689,8 @@ class core_course_category implements renderable, cacheable_object, IteratorAggr
      * @param null|stdClass $user The user id or object. By default (null) checks access for the current user.
      */
     public static function can_view_course_info($course, $user = null) {
+        global $DB;
+
         if ($course->id == SITEID) {
             return true;
         }
@@ -697,6 +699,12 @@ class core_course_category implements renderable, cacheable_object, IteratorAggr
             if (!has_capability('moodle/course:viewhiddencourses', $coursecontext, $user)) {
                 return false;
             }
+        }
+        // MDL-69374 An allowed guest access shouldn't be overruled by the 'moodle/category:viewcourselist' capability.
+        $guestenrolenabled = $DB->record_exists('enrol', ['enrol' => 'guest', 'courseid' => $course->id,
+            'status' => ENROL_INSTANCE_ENABLED]);
+        if ($guestenrolenabled) {
+            return true;
         }
         $categorycontext = isset($course->category) ? context_coursecat::instance($course->category) :
             context_course::instance($course->id)->get_parent_context();
