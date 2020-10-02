@@ -126,19 +126,12 @@ class enrol_manual_plugin extends enrol_plugin {
      * @return int id of new instance, null if can not be created
      */
     public function add_default_instance($course) {
-        $expirynotify = $this->get_config('expirynotify', 0);
-        if ($expirynotify == 2) {
-            $expirynotify = 1;
-            $notifyall = 1;
-        } else {
-            $notifyall = 0;
-        }
         $fields = array(
             'status'          => $this->get_config('status'),
             'roleid'          => $this->get_config('roleid', 0),
             'enrolperiod'     => $this->get_config('enrolperiod', 0),
-            'expirynotify'    => $expirynotify,
-            'notifyall'       => $notifyall,
+            'expirynotify'    => $this->get_config('expirynotify', 0),
+            'notifyall'       => 0,
             'expirythreshold' => $this->get_config('expirythreshold', 86400),
         );
         return $this->add_instance($course, $fields);
@@ -156,6 +149,12 @@ class enrol_manual_plugin extends enrol_plugin {
         if ($DB->record_exists('enrol', array('courseid'=>$course->id, 'enrol'=>'manual'))) {
             // only one instance allowed, sorry
             return NULL;
+        }
+
+        // MDL-64648, MDL-61811 Define value of the 'notifyall' element based on
+        // the 'expirynotify' value in case it's defined and add it to the form data.
+        if (is_array($fields) and isset($fields['expirynotify'])) {
+            $fields['notifyall'] = ($fields['expirynotify'] == 2) ? 1 : 0;
         }
 
         return parent::add_instance($course, $fields);
@@ -178,6 +177,11 @@ class enrol_manual_plugin extends enrol_plugin {
                 }
             }
         }
+
+        // MDL-64648, MDL-61811 Define value of the 'notifyall' property based on
+        // the 'expirynotify' value and add it to the form data.
+        $data->notifyall = ($data->expirynotify == 2) ? 1 : 0;
+
         return parent::update_instance($instance, $data);
     }
 
@@ -563,7 +567,7 @@ class enrol_manual_plugin extends enrol_plugin {
      *
      * @return array
      */
-    protected function get_expirynotify_options() {
+    public function get_expirynotify_options() {
         $options = array(
             0 => get_string('no'),
             1 => get_string('expirynotifyenroller', 'core_enrol'),

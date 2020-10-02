@@ -540,4 +540,56 @@ class enrol_manual_lib_testcase extends advanced_testcase {
         // Manual enrol has 2 enrol actions -- edit and unenrol.
         $this->assertCount(2, $actions);
     }
+
+    /**
+     * Test for setting of 'notifyall' field in 'enrol' database table.
+     */
+    public function test_notifyall_set() {
+        global $CFG, $DB;
+
+        $this->resetAfterTest();
+        $generator = $this->getDataGenerator();
+
+        // Prepare some data.
+        $student = get_archetype_roles('student');
+        $student = reset($student);
+
+        $plugin = enrol_get_plugin('manual');
+        $plugin->set_config('status', ENROL_INSTANCE_ENABLED);
+        $plugin->set_config('enrolperiod', 0);
+        $plugin->set_config('roleid', $student->id);
+        $plugin->set_config('expirynotify', 2);
+        $plugin->set_config('expirythreshold', 86400);
+
+        $course = $generator->create_course();
+
+        // The above 'create_course()' call also assumes that a default instance
+        // of the manual plugin has been created so we can start checking of
+        // what's in the 'notifyall' field of the instance.
+        $enrolinstance = $DB->get_record('enrol', ['courseid' => $course->id, 'enrol' => 'manual']);
+        // As the 'expirynotify' setting for the plugin is set to 2 then we expect 1 for 'notifyall'.
+        $this->assertEquals(1, $enrolinstance->notifyall);
+
+        // Now test updating of the instance.
+        $data = new stdClass();
+        $data->expirynotify = 1;
+        $plugin->update_instance($enrolinstance, $data);
+        $this->assertEquals(0, $DB->get_field('enrol', 'notifyall',
+            ['courseid' => $course->id, 'enrol' => 'manual']));
+
+        // Now remove the default instance and add a new one.
+        $plugin->delete_instance($enrolinstance);
+
+        // Just get the config stuff to populate fields except 'expirynotify'.
+        $fields = [
+            'status'          => $plugin->get_config('status'),
+            'enrolperiod'     => $plugin->get_config('enrolperiod', 0),
+            'roleid'          => $plugin->get_config('roleid', 0),
+            'expirynotify'    => 0,
+            'expirythreshold' => $plugin->get_config('expirythreshold', 86400)
+        ];
+        $plugin->add_instance($course, $fields);
+        $this->assertEquals(0, $DB->get_field('enrol', 'notifyall',
+            ['courseid' => $course->id, 'enrol' => 'manual']));
+    }
 }

@@ -26,6 +26,8 @@ defined('MOODLE_INTERNAL') || die();
 
 if ($ADMIN->fulltree) {
 
+    $plugin = enrol_get_plugin('manual');
+
     //--- general settings -----------------------------------------------------------------------------------
     $settings->add(new admin_setting_heading('enrol_manual_settings', '', get_string('pluginname_desc', 'enrol_manual')));
 
@@ -74,7 +76,7 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configduration('enrol_manual/enrolperiod',
         get_string('defaultperiod', 'enrol_manual'), get_string('defaultperiod_desc', 'enrol_manual'), 0));
 
-    $options = array(0 => get_string('no'), 1 => get_string('expirynotifyenroller', 'core_enrol'), 2 => get_string('expirynotifyall', 'core_enrol'));
+    $options = $plugin->get_expirynotify_options();
     $settings->add(new admin_setting_configselect('enrol_manual/expirynotify',
         get_string('expirynotify', 'core_enrol'), get_string('expirynotify_help', 'core_enrol'), 0, $options));
 
